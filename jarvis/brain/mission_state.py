@@ -1,0 +1,131 @@
+"""
+JARVIS AI — Mission State Manager & Auto Report Generator
+=========================================================
+Tracks persistent mission state, active payload context, completed procedure steps,
+and generates automated post-EVA Mission Summary Reports (Markdown format).
+"""
+
+import json
+from datetime import datetime
+from pathlib import Path
+from loguru import logger
+from typing import Dict, List, Optional, Any
+
+
+class MissionStateManager:
+    """
+    State Manager for active EVA mission.
+    Persists session state and compiles structured post-EVA reports.
+    """
+
+    def __init__(self, state_file: str = "data/mission_state.json", report_dir: str = "data/mission_reports/"):
+        self.state_file = Path(state_file)
+        self.report_dir = Path(report_dir)
+        self.report_dir.mkdir(parents=True, exist_ok=True)
+
+        self.state: Dict[str, Any] = {
+            "mission_id": "AMADEE-27",
+            "astronaut": "Astronaut-01",
+            "start_time": datetime.now().isoformat(),
+            "active_payload": None,
+            "current_step": 0,
+            "completed_steps": [],
+            "event_log": []
+        }
+
+        self._load_state()
+
+    def _load_state(self) -> None:
+        """Load state from disk if exists."""
+        if self.state_file.exists():
+            try:
+                data = json.loads(self.state_file.read_text(encoding="utf-8"))
+                self.state.update(data)
+                logger.info(f"[MISSION STATE] Restored mission state from {self.state_file}")
+            except Exception as e:
+                logger.error(f"[MISSION STATE] Error loading state file: {e}")
+
+    def save_state(self) -> None:
+        """Persist current state to disk."""
+        try:
+            self.state_file.parent.mkdir(parents=True, exist_ok=True)
+            self.state_file.write_text(json.dumps(self.state, indent=2), encoding="utf-8")
+        except Exception as e:
+            logger.error(f"[MISSION STATE] Error saving state file: {e}")
+
+    def set_active_payload(self, payload_name: str) -> None:
+        """Set the active scientific payload (e.g., 'Caillou', 'Rover', 'Geology')."""
+        self.state["active_payload"] = payload_name
+        self.log_event(f"Payload context set to: '{payload_name}'")
+
+    def record_step_completed(self, procedure_name: str, step_num: int, step_title: str) -> None:
+        """Record a completed procedure step."""
+        entry = {
+            "timestamp": datetime.now().strftime("%H:%M:%S"),
+            "procedure": procedure_name,
+            "step_number": step_num,
+            "title": step_title
+        }
+        self.state["completed_steps"].append(entry)
+        self.state["current_step"] = step_num
+        self.log_event(f"Completed {procedure_name} Step {step_num}: {step_title}")
+
+    def log_event(self, description: str) -> None:
+        """Log a mission event with timestamp."""
+        event = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "event": description
+        }
+        self.state["event_log"].append(event)
+        self.save_state()
+
+    def generate_mission_report(self) -> Path:
+        """
+        Generate a structured Markdown Post-EVA Mission Report.
+        Saves to data/mission_reports/mission_report_YYYYMMDD_HHMM.md
+        """
+        now = datetime.now()
+        report_filename = f"mission_report_{now.strftime('%Y%m%d_%H%M')}.md"
+        report_path = self.report_dir / report_filename
+
+        start_dt = datetime.fromisoformat(self.state.get("start_time", now.isoformat()))
+        duration_mins = (now - start_dt).total_seconds() / 60.0
+
+        content = [
+            f"# ÖWF AMADEE-27 — Post-EVA Mission Summary Report",
+            f"**Mission ID:** {self.state.get('mission_id', 'AMADEE-27')}",
+            f"**Astronaut:** {self.state.get('astronaut', 'Astronaut-01')}",
+            f"**Date:** {now.strftime('%Y-%m-%d')}",
+            f"**EVA Duration:** {duration_mins:.1f} minutes",
+            f"**Active Payload:** {self.state.get('active_payload', 'N/A')}",
+            "\n---",
+            "\n## Completed Procedure Steps\n"
+        ]
+
+        steps = self.state.get("completed_steps", [])
+        if steps:
+            for s in steps:
+                content.append(f"- **[{s['timestamp']}]** `{s['procedure']}` Step {s['step_number']}: {s['title']}")
+        else:
+            content.append("- *No procedure steps recorded during this session.*")
+
+        content.extend([
+            "\n---",
+            "\n## Mission Event Log\n"
+        ])
+
+        events = self.state.get("event_log", [])
+        if events:
+            for e in events:
+                content.append(f"- `[{e['timestamp']}]` {e['event']}")
+        else:
+            content.append("- *No events logged.*")
+
+        content.extend([
+            "\n---",
+            f"\n*Report automatically generated by JARVIS / AOUDA Edge AI at {now.strftime('%H:%M:%S')}.*"
+        ])
+
+        report_path.write_text("\n".join(content), encoding="utf-8")
+        logger.success(f"[MISSION STATE] Post-EVA Report generated: {report_path.resolve()}")
+        return report_path

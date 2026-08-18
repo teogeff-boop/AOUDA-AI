@@ -1,0 +1,12 @@
+# Mission Manifest & Base Info
+mission:
+  code: "AMADEE-26"
+  base_station: "Hab-1 Analog Base Station"
+  coordinates: "Lat 47.3769 N, Lon 8.5417 E, Alt 450m"
+  crew:
+    commander: "Astronaut-01 (Commander)"
+    specialist: "Astronaut-02 (EVA Specialist)"
+    field_engineer: "Astronaut-03 (Field Engineer)"
+  emergency_contacts:
+    ground_control: "Freq 433.92 MHz — Call sign GROUND-CONTROL"
+    medical: "Freq 433.95 MHz — Call sign MED-BASE"

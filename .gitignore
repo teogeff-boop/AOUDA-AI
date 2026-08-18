@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+ENV/
+env/
+
+# Pytest / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Heavy AI Models (GGUF, ONNX, Vosk models downloaded via scripts/download_models.py)
+models/**/*.gguf
+models/**/*.onnx
+models/llm/
+models/piper/*.onnx
+models/vosk/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

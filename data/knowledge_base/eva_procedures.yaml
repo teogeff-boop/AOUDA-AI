@@ -1,0 +1,16 @@
+# EVA Procedures & Checklists
+checklists:
+  pre_eva:
+    title: "Pre-EVA Verification Protocol"
+    steps:
+      - "Step 1: Verify suit pressure — nominal range 950 to 1050 hPa."
+      - "Step 2: Communications check — confirm radio link with ground support."
+      - "Step 3: Oxygen supply — minimum 2 hours reserve required."
+      - "Step 4: GPS lock confirmed."
+  post_eva:
+    title: "Post-EVA Egress Protocol"
+    steps:
+      - "Step 1: Depressurize airlock to ambient level."
+      - "Step 2: Disconnect umbilical power and switch to suit battery."
+      - "Step 3: Perform outer suit dust sweep."
+      - "Step 4: Report status to ground control."

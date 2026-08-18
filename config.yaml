@@ -1,0 +1,146 @@
+# ==============================================================================
+# JARVIS AI — Master Configuration (ÖWF AMADEE-26 Mission Protocol)
+# ==============================================================================
+
+# --- Core System Meta ---
+jarvis:
+  name: "AOUDA"
+  version: "0.3.0"
+  mission: "AMADEE-26"
+
+# --- Global / Audio Settings ---
+audio:
+  input_device_index: null   # null = system default microphone
+  output_device_index: null  # null = system default speaker
+  sample_rate: 16000
+  channels: 1
+  chunk_size: 4000
+
+# --- Wake Word ---
+wakeword:
+  enabled: true
+  engine: "whisper"         # faster-whisper — fast, reliable wake word
+  keyword: "aouda"
+  whisper_model_size: "base" # Fast model for instant AOUDA detection
+  listen_timeout_s: 10      # Max seconds to listen after wake word
+
+# --- Speech-to-Text ---
+stt:
+  engine: "whisper"          # "whisper" (faster-whisper, best for accents & caillou) | "vosk"
+  whisper_model_size: "base"  # Fast base model (~140MB) — 150ms instant CPU inference
+  whisper_language: "en"
+  model_path: "models/vosk/vosk-model-small-en-us-0.15"
+  sample_rate: 16000
+  silence_timeout_s: 0.5     # 0.5s silence trigger — instant response after speaking
+
+  # --- Phonetic corrections ---
+  # Automatic mapping of what STT hears → what was actually meant.
+  # Essential for French/non-English words spoken with an accent.
+  phonetic_corrections:
+    # Caillou variants (Whisper / Vosk mishearings for Caillou)
+    "cargo": "caillou"
+    "cayo": "caillou"
+    "kiku": "caillou"
+    "kayu": "caillou"
+    "kaillou": "caillou"
+    "cayou": "caillou"
+    "kaiu": "caillou"
+    "call you": "caillou"
+    "can you": "caillou"
+    "guy you": "caillou"
+    "cow you": "caillou"
+
+    # AOUDA variants
+    "awada": "aouda"
+    "auda": "aouda"
+    "aoudaa": "aouda"
+    "aooda": "aouda"
+
+    # Mission terms
+    "amade": "AMADEE"
+    "amadi": "AMADEE"
+    "amaday": "AMADEE"
+    "eva": "EVA"
+
+  whisper_hotwords:
+    - "AOUDA"
+    - "Caillou"
+    - "AMADEE"
+    - "EVA"
+    - "status"
+    - "telemetry"
+    - "procedure"
+    - "emergency"
+    - "mayday"
+
+# --- Brain (Logic Engine) ---
+brain:
+  default_mode: "hybrid"     # "little" (reflexes only) | "big" (RAG only) | "hybrid" (RAG + reflexes)
+  fallback_response: "AOUDA: Statement unclear. Request procedure step or suit status."
+  knowledge_base_path: "data/knowledge_base/"
+  fuzzy_threshold: 60        # Minimum match score for Little Brain keyword matching (0-100)
+
+# --- Text-to-Speech ---
+tts:
+  engine: "piper"            # "piper" (offline neural, high quality) | "espeak" (lightweight fallback)
+  model_path: "models/piper/en_US-amy-medium.onnx"   # Amy — Pure, natural English female neural AI voice
+  model_config: "models/piper/en_US-amy-medium.onnx.json"
+  output_device_index: null
+  speed: 1.0
+  piper:
+    model_path: "models/piper/en_US-amy-medium.onnx"
+    config_path: "models/piper/en_US-amy-medium.onnx.json"
+    length_scale: 1.0        # 1.0 = natural human voice pace
+  espeak:
+    voice: "en-us"
+    speed: 160
+
+# --- Sensors (Suit Telemetry) ---
+sensors:
+  mode: "arduino"            # "arduino" (Real Arduino Mega 2560 + DHT11 on COM4) | "simulated" | "csv" | "network"
+  update_interval_s: 0.1     # Ultra fast 100ms hardware polling for instant DHT11 updates!
+  telemetry_log_path: "data/telemetry.csv"
+
+  alerts:
+    temperature_max_c: 31.0       # ALERT if Temp > 31.0 °C
+    humidity_max_percent: 70.0     # ALERT if Humidity > 70.0 %
+    o2_min_percent: 19.5
+    co2_max_ppm: 5000
+    heart_rate_max: 150
+    heart_rate_min: 50
+    battery_min_percent: 15.0
+
+  # Real Hardware Serial configuration (Arduino Mega 2560 R3 + DHT11)
+  arduino:
+    port: "COM4"
+    baudrate: 9600
+
+  serial:
+    port: "COM4"
+    baudrate: 9600
+
+  # MQTT broker (if source == "mqtt")
+  mqtt:
+    broker: "localhost"
+    port: 1883
+    topic: "aouda/suit/telemetry"
+
+# --- Mission Context & Operational Constraints ---
+mission:
+  name: "AMADEE-26"
+  astronaut_name: "Astronaut"
+  suit_id: "AOUDA-X"
+  log_all_interactions: true
+  emergency_keywords:
+    - "emergency"
+    - "mayday"
+    - "sos"
+    - "help"
+    - "medical"
+
+# --- Logging ---
+logging:
+  level: "INFO"
+  log_file: "logs/jarvis.log"
+  rotation: "10 MB"
+  retention: "7 days"

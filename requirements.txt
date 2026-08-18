@@ -1,0 +1,30 @@
+# ============================================================
+# JARVIS AI — Dépendances Pipeline Vocal Offline
+# Mission AMADEE (ÖWF) — Assistant Astronaute Analogique
+# ============================================================
+# Compatible : Windows (dev) + Raspberry Pi Linux (prod)
+
+# --- Audio I/O ---
+sounddevice==0.5.2        # Capture/lecture audio cross-platform (no admin needed)
+soundfile==0.13.1         # Lecture/écriture fichiers audio WAV/FLAC
+numpy==2.2.6              # Traitement signal audio
+
+# --- Speech-to-Text (STT) ---
+faster-whisper>=1.0.0     # STT offline, meilleure gestion des accents et mots techniques
+vosk==0.3.45              # STT fallback léger (moins précis)
+
+# --- Wake Word Detection ---
+openwakeword==0.6.0       # Détection mot de réveil offline
+tflite-runtime==2.14.0    # Runtime TensorFlow Lite pour OpenWakeWord (Pi)
+
+# --- Text-to-Speech (TTS) ---
+piper-tts==1.2.0          # TTS offline, voix naturelle, rapide sur Pi
+
+# --- Configuration & Utilitaires ---
+pyyaml==6.0.2             # Lecture config.yaml
+loguru==0.7.3             # Logging structuré et coloré
+rich==14.0.0              # Interface CLI lisible et colorée
+
+# --- Tests ---
+pytest==8.4.0
+pytest-asyncio==1.0.0

@@ -1,0 +1,8 @@
+# Geology Sample Protocols & Codes
+geology:
+  sampling_protocol: "Seal sample in sterile bag, record GPS coordinates, label with code, log mass."
+  codes:
+    REG: "REG-01: Fine regolith / dust sample."
+    BAS: "BAS-02: Igneous basaltic rock sample."
+    BRE: "BRE-03: Breccia / Impact melt sample."
+    SED: "SED-04: Sedimentary layer sample."

@@ -1,0 +1,23 @@
+# Technical specifications for Aouda Analog Suit
+suit:
+  model: "Aouda.X"
+  mission: "AMADEE-26"
+  organization: "Austrian Space Forum (OeWF)"
+  pressure:
+    nominal_hpa: 1013.25
+    min_hpa: 950.0
+    max_hpa: 1050.0
+  oxygen:
+    min_reserve_hours: 2.0
+    nominal_flow_lmin: 1.5
+    min_safe_percent: 19.5
+  battery:
+    capacity_wh: 450.0
+    max_runtime_hours: 6.0
+    min_safe_percent: 20.0
+  thermal:
+    min_temp_c: 15.0
+    max_temp_c: 38.0
+  communications:
+    primary_channel: "Ch-1 UHF 433.92 MHz"
+    backup_channel: "Ch-2 VHF 144.80 MHz"
